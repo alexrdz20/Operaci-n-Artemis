@@ -1,7 +1,7 @@
 from pyDatalog import pyDatalog
 
 # 1. Definición de términos y variables
-pyDatalog.create_terms('X, Y, Z, R, conexion, nodo_danado, ruta_energia')
+pyDatalog.create_terms('X, Y, Z, Camino, Resto, conexion, nodo_danado, ruta_energia')
 
 # 2. Hechos: Mapeo de la red de la nave Orion
 +conexion('paneles', 'rele_a')
@@ -19,13 +19,11 @@ pyDatalog.create_terms('X, Y, Z, R, conexion, nodo_danado, ruta_energia')
 
 # 4. Reglas: Inferencia de ruta segura (Algoritmo Recursivo con rastreo de camino)
 # pyDatalog permite usar listas para construir el camino
-pyDatalog.create_terms('Camino')
-
-# Caso base: Conexión directa a un nodo no dañado
+# -- REGLA DE ENRUTAMIENTO SEGURO --
 ruta_energia(X, Y, Camino) <= (conexion(X, Y) & ~(nodo_danado(Y)) & (Camino == (X, Y)))
 
-# Caso recursivo: Buscar a través de nodos intermedios seguros
-ruta_energia(X, Y, Camino) <= (conexion(X, Z) & ~(nodo_danado(Z)) & ruta_energia(Z, Y, Camino[1:]) & (Camino == (X,) + Camino[1:]))
+# -- REGLA RECURSIVA (RASTREO DE CAMINO) --
+ruta_energia(X, Y, Camino) <= (conexion(X, Z) & ~(nodo_danado(Z)) & ruta_energia(Z, Y, Resto) & (Camino == (X,) + Resto))
 
 # 5. Ejecución de la consulta de recuperación
 print("--- SISTEMA DE RECUPERACIÓN ARTEMIS II ---")

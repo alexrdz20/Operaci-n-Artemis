@@ -67,7 +67,7 @@
                 <div class="scene-content code-view">
                     <div class="col">
                         <span class="comment"># -- DEFINICIÓN DE TÉRMINOS --</span><br>
-                        pyDatalog.create_terms('X, Y, Z, conexion, nodo_danado, ruta_energia')<br><br>
+                        pyDatalog.create_terms('X, Y, Z, Camino, Resto, conexion, nodo_danado, ruta_energia')<br><br>
                         <span class="comment"># -- MAPEO DE RED ARTEMIS --</span><br>
                         +conexion('paneles', 'rele_a')<br>
                         +conexion('paneles', 'rele_b')<br>
@@ -92,9 +92,9 @@
                 <div class="scene-content code-view">
                     <div class="col">
                         <span class="comment"># -- REGLA DE ENRUTAMIENTO SEGURO --</span><br>
-                        ruta_energia(X, Y) <= (conexion(X, Y) & ~(nodo_danado(Y)))<br><br>
-                        <span class="comment"># -- REGLA RECURSIVA --</span><br>
-                        ruta_energia(X, Y) <= (conexion(X, Z) & ~(nodo_danado(Z)) & ruta_energia(Z, Y))
+                        ruta_energia(X, Y, Camino) <= (conexion(X, Y) & ~(nodo_danado(Y)) & (Camino == (X, Y)))<br><br>
+                        <span class="comment"># -- REGLA RECURSIVA (RASTREO DE CAMINO) --</span><br>
+                        ruta_energia(X, Y, Camino) <= (conexion(X, Z) & ~(nodo_danado(Z)) & ruta_energia(Z, Y, Resto) & (Camino == (X,) + Resto))
                     </div>
                 </div>
             </section>
