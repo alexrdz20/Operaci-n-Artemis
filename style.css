@@ -1,0 +1,353 @@
+:root {
+    --bg-color: #000408;
+    --cyan: #00f2ff;
+    --cyan-glow: rgba(0, 242, 255, 0.4);
+    --red: #ff3131;
+    --red-glow: rgba(255, 49, 49, 0.8);
+    --gold: #ffd700;
+    --gold-glow: rgba(255, 215, 0, 1);
+    --font-mono: 'Share Tech Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: var(--bg-color);
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+}
+
+/* DEEP SPACE BACKGROUND */
+.space-background { position: fixed; inset: 0; z-index: -1; background: #000; }
+.stars {
+    position: absolute; width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.1;
+}
+
+/* EFFECTS */
+.crt-overlay {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+    pointer-events: none; z-index: 1000;
+}
+.scanline-move {
+    position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: rgba(0, 242, 255, 0.1);
+    box-shadow: 0 0 10px var(--cyan-glow);
+    animation: scanline 4s linear infinite;
+    z-index: 1001; pointer-events: none;
+}
+@keyframes scanline { from { top: 0; } to { top: 100%; } }
+
+/* HUD CONTAINER */
+.hud-container {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    padding: 10px; gap: 10px;
+}
+
+/* HEADER */
+.hud-header {
+    height: 55px;
+    display: flex; justify-content: space-between; align-items: center;
+    border: 1px solid var(--cyan-glow);
+    background: rgba(0, 15, 30, 0.8);
+    padding: 0 20px;
+}
+
+.artemis-branding { display: flex; align-items: center; gap: 10px; }
+.artemis-logo { font-size: 2.2rem; font-weight: 900; color: white; position: relative; font-family: serif; }
+.artemis-logo::after {
+    content: ''; position: absolute; top: 20%; left: -10%; width: 120%; height: 40%;
+    border-top: 3px solid var(--red); border-radius: 50%; transform: rotate(-15deg);
+}
+.artemis-text .program { font-size: 1.1rem; letter-spacing: 3px; font-weight: bold; }
+.artemis-text .mission { font-size: 0.6rem; opacity: 0.7; }
+
+/* SCENE MANAGER */
+.scene-manager {
+    flex: 1; min-height: 0; position: relative;
+    border: 1px solid var(--cyan-glow);
+    background: rgba(0, 5, 15, 0.9);
+}
+
+.scene {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column;
+    padding: 15px;
+}
+.scene.active { display: flex; animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
+
+.scene-header {
+    padding: 8px 20px; font-size: 0.9rem; letter-spacing: 2px;
+    border-bottom: 1px solid var(--cyan-glow);
+    margin-bottom: 10px;
+    background: rgba(0, 242, 255, 0.05);
+}
+
+.scene-content { flex: 1; position: relative; overflow: hidden; min-height: 0; }
+
+/* SHIP MAPS */
+.ship-map-container {
+    height: 100%;
+    background-image: 
+        url('Imagenes/orion_blueprint_diag_1778512817626.png'),
+        url('Imagenes/space_bg.png');
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-size: contain, cover;
+}
+
+.mission-telemetry { display: flex; align-items: center; gap: 30px; }
+.oxygen-meter { display: flex; align-items: center; gap: 10px; }
+.oxygen-meter .label { font-size: 0.6rem; color: var(--red); font-weight: bold; }
+.o2-bar-bg { width: 100px; height: 8px; background: rgba(255, 49, 49, 0.1); border: 1px solid var(--red); }
+.o2-bar-fill { width: 12%; height: 100%; background: var(--red); box-shadow: 0 0 10px var(--red); }
+.o2-pct { font-size: 0.8rem; color: var(--red); font-weight: bold; width: 35px; }
+
+.mission-status-panel {
+    position: absolute; bottom: 20px; left: 20px;
+    width: 250px; background: rgba(0, 0, 0, 0.85);
+    border: 1px solid var(--red-glow); padding: 15px;
+    font-size: 0.7rem; color: #fff;
+    box-shadow: 0 0 20px rgba(255, 49, 49, 0.2);
+    pointer-events: none;
+}
+.status-title { color: var(--red); font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid var(--red); padding-bottom: 5px; }
+.status-item { margin-bottom: 8px; line-height: 1.4; }
+.status-item .label { color: var(--cyan); font-weight: bold; display: block; font-size: 0.6rem; }
+
+.zoom-indicator {
+    position: absolute; bottom: 10px; right: 10px;
+    background: rgba(0, 0, 0, 0.8); border: 1px solid var(--cyan);
+    padding: 4px 10px; font-size: 0.7rem; color: var(--cyan);
+}
+
+/* CODE VIEWS */
+.code-view {
+    height: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+    padding: 20px; 
+    background: 
+        linear-gradient(rgba(0, 5, 15, 0.92), rgba(0, 5, 15, 0.92)),
+        url('Imagenes/space_bg.png') center/cover no-repeat;
+    font-size: 1.1rem; line-height: 1.4;
+    border-left: 3px solid var(--cyan);
+}
+
+/* Second Code Scene with the new Tactical HUD background */
+#scene-c .code-view {
+    background: 
+        linear-gradient(rgba(0, 5, 15, 0.94), rgba(0, 5, 15, 0.94)),
+        url('Imagenes/Spaceship Radar Screen Hud by Vector Tradition _ Creative Market.jpg') center/cover no-repeat;
+}
+.comment { color: #5c6370; font-style: italic; }
+
+/* CODE SCANNING EFFECT */
+.code-view.analyzing {
+    position: relative;
+}
+
+.code-view.analyzing::after {
+    content: 'ANALIZANDO LÓGICA...';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 40px;
+    background: linear-gradient(to bottom, var(--cyan-glow), transparent);
+    border-top: 2px solid var(--cyan);
+    color: var(--cyan);
+    font-size: 0.8rem;
+    padding: 10px;
+    display: flex; align-items: flex-start;
+    animation: codeScan 4s linear infinite;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes codeScan {
+    from { top: -10%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    to { top: 100%; opacity: 0; }
+}
+
+.code-view.analyzing .col {
+    animation: codePulse 2s ease-in-out infinite;
+}
+
+@keyframes codePulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; text-shadow: 0 0 10px var(--cyan-glow); }
+}
+
+/* VERDICT SPLIT */
+.verdict-split { display: grid; grid-template-columns: 1fr 1.2fr; height: 100%; gap: 15px; }
+
+.db-visual-container {
+    border: 1px solid var(--cyan-glow); position: relative; overflow: hidden;
+    box-shadow: inset 0 0 30px rgba(0, 242, 255, 0.1);
+}
+
+/* Dynamic Data Stream Animation */
+.data-stream {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 242, 255, 0.05) 3px, transparent 4px);
+    background-size: 100% 4px;
+    animation: stream 10s linear infinite;
+    pointer-events: none;
+}
+@keyframes stream { from { background-position: 0 0; } to { background-position: 0 100%; } }
+
+/* Scanning Bar */
+.db-visual-container::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: var(--cyan); box-shadow: 0 0 15px var(--cyan);
+    animation: scan 3s ease-in-out infinite;
+    opacity: 0.3; z-index: 5;
+}
+@keyframes scan { 0%, 100% { top: 10%; } 50% { top: 90%; } }
+
+.db-image {
+    width: 100%; height: 100%;
+    background: 
+        linear-gradient(rgba(0, 5, 15, 0.6), rgba(0, 5, 15, 0.6)),
+        url('Imagenes/Abstract technology ui futuristic hud interface hologram _ Premium Vector.jpg') center/cover no-repeat;
+    position: relative;
+    display: flex; justify-content: center; align-items: center;
+}
+
+#networkCanvas, #finalMapCanvas { width: 100%; height: 100%; position: absolute; top:0; left:0; }
+
+/* Rotating Analysis Ring (Aligned with central HUD circle) */
+.db-image::before {
+    content: ''; position: absolute;
+    width: 220px; height: 220px;
+    border: 2px dashed var(--cyan);
+    border-radius: 50%;
+    animation: rotate 8s linear infinite;
+    opacity: 0.5;
+    box-shadow: 0 0 20px var(--cyan-glow);
+}
+
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes corePulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.5); opacity: 1; } }
+
+.loading-overlay {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; justify-content: center; align-items: center;
+    background: rgba(0, 0, 0, 0.8);
+}
+.active-sync .loading-overlay { display: flex; }
+.spinner {
+    width: 60px; height: 60px; border: 4px solid rgba(0, 242, 255, 0.1);
+    border-top: 4px solid var(--cyan); border-radius: 50%; animation: spin 1s linear infinite;
+}
+.percent-text { margin-top: 20px; font-size: 1.5rem; font-weight: bold; color: var(--cyan); letter-spacing: 2px; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.console-view {
+    display: flex; flex-direction: column; padding: 20px;
+    background: #000; border-left: 3px solid var(--cyan);
+}
+.terminal { flex: 1; font-size: 1.2rem; color: #fff; line-height: 1.6; }
+.success { color: #00ff00; }
+
+/* FOOTER NAV */
+.hud-footer {
+    height: 50px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; border: 1px solid var(--cyan-glow); background: rgba(0, 15, 30, 0.8);
+}
+.nav-btn {
+    background: transparent; border: 1px solid var(--cyan);
+    color: var(--cyan); padding: 5px 15px; font-size: 0.8rem; cursor: pointer;
+}
+.nav-btn:hover { background: var(--cyan); color: #000; }
+
+.nav-dots { display: flex; gap: 10px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--cyan); cursor: pointer; }
+.dot.active { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+
+/* BUTTONS */
+.start-btn, .diag-btn {
+    background: transparent; border: 2px solid var(--cyan); color: var(--cyan);
+    padding: 12px 35px; font-size: 1rem; cursor: pointer;
+    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+}
+.diag-btn { border-color: var(--gold); color: var(--gold); }
+.start-btn:hover { background: var(--cyan); color: #000; }
+.diag-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold-glow); }
+
+.hidden { display: none; }
+.blink { animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.3; } }
+
+/* INTRO SCENE RESTORED */
+.intro-content {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: radial-gradient(circle at center, rgba(0, 242, 255, 0.1) 0%, transparent 70%);
+}
+
+.big-artemis {
+    font-size: 10rem;
+    font-weight: 900;
+    font-family: serif;
+    position: relative;
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 0 0 30px var(--cyan-glow);
+}
+
+.big-artemis::after {
+    content: '';
+    position: absolute;
+    top: 20%; left: -10%;
+    width: 120%; height: 40%;
+    border-top: 8px solid var(--red);
+    border-radius: 50%;
+    transform: rotate(-15deg);
+    filter: drop-shadow(0 0 10px var(--red-glow));
+}
+
+.glitch-text {
+    font-size: 4rem;
+    letter-spacing: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.intro-sub {
+    font-size: 1rem;
+    letter-spacing: 6px;
+    opacity: 0.6;
+    margin-bottom: 50px;
+}
+
+.loading-bar-container {
+    width: 400px;
+    height: 6px;
+    background: rgba(0, 242, 255, 0.1);
+    margin-bottom: 40px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.loading-bar-fill {
+    width: 0%; height: 100%;
+    background: var(--cyan);
+    box-shadow: 0 0 20px var(--cyan);
+}
+
+.houston-link {
+    margin-top: 40px;
+    font-size: 0.8rem;
+    opacity: 0.4;
+    letter-spacing: 2px;
+}

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTEMIS II - Mission Control HUD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="space-background"><div class="stars"></div></div>
+
+    <div class="hud-container">
+        <div class="crt-overlay"></div>
+        <div class="scanline-move"></div>
+        
+        <header class="hud-header" id="main-header" style="display: none;">
+            <div class="artemis-branding">
+                <div class="artemis-logo">A</div>
+                <div class="artemis-text">
+                    <div class="program">ARTEMIS PROGRAM</div>
+                    <div class="mission">MISSION II | RECOVERY</div>
+                </div>
+            </div>
+            <div class="mission-telemetry">
+                <div class="oxygen-meter">
+                    <span class="label">O2 LEVEL:</span>
+                    <div class="o2-bar-bg"><div class="o2-bar-fill blink"></div></div>
+                    <span class="o2-pct blink">12%</span>
+                </div>
+
+            </div>
+        </header>
+
+        <main class="scene-manager">
+            
+            <!-- SCENE 0: INTRO -->
+            <section class="scene active" id="scene-intro">
+                <div class="intro-content">
+                    <div class="big-artemis">A</div>
+                    <h1 class="glitch-text" data-text="ARTEMIS II">ARTEMIS II</h1>
+                    <p class="intro-sub">FLIGHT SOFTWARE RECOVERY SYSTEM</p>
+                    <div class="loading-bar-container"><div class="loading-bar-fill" id="intro-bar"></div></div>
+                    <button id="start-mission-btn" class="start-btn">INICIAR MISIÓN</button>
+                    <div class="houston-link">LINK ESTABLISHED: HOUSTON-MCC-TX</div>
+                </div>
+            </section>
+
+            <!-- Scene 1: Overview Map -->
+            <section class="scene" id="scene-a">
+                <div class="scene-header">A. VISTA GENERAL DE LA NAVE</div>
+                <div class="scene-content ship-map-container">
+                    <canvas id="networkCanvas"></canvas>
+                    <div class="mission-status-panel">
+                        <div class="status-title">REPORTE DE INCIDENTE</div>
+                        <div class="status-item"><span class="label">COMANDANTE:</span> ATRAPADO EN MOD. COMANDO</div>
+                        <div class="status-item"><span class="label">INGENIERA:</span> ESPERANDO RUTA EN MOD. SERVICIO</div>
+                        <div class="status-item red blink"><span class="label">OXÍGENO:</span> RESERVAS CRÍTICAS (12%)</div>
+                        <div class="status-item"><span class="label">SISTEMA:</span> TELEMETRÍA PASIVA ACTIVA</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scene 2: Facts -->
+            <section class="scene" id="scene-b">
+                <div class="scene-header">B. LÓGICA DE DATOS (PYDATALOG)</div>
+                <div class="scene-content code-view">
+                    <div class="col">
+                        <span class="comment"># -- DEFINICIÓN DE TÉRMINOS --</span><br>
+                        pyDatalog.create_terms('X, Y, Z, conexion, nodo_danado, ruta_energia')<br><br>
+                        <span class="comment"># -- MAPEO DE RED ARTEMIS --</span><br>
+                        +conexion('paneles', 'rele_a')<br>
+                        +conexion('paneles', 'rele_b')<br>
+                        +conexion('rele_a', 'rele_c')<br>
+                        +conexion('rele_a', 'mod_servicio')<br>
+                        +conexion('rele_b', 'mod_servicio')<br>
+                        +conexion('rele_c', 'sop_vital')<br>
+                        +conexion('rele_c', 'mod_comando')<br>
+                        +conexion('mod_servicio', 'mod_comando')
+                    </div>
+                    <div class="col">
+                        <span class="comment"># -- ESTADOS DE FALLA --</span><br>
+                        +nodo_danado('rele_b')<br>
+                        +nodo_danado('mod_servicio')
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scene 3: Logic -->
+            <section class="scene" id="scene-c">
+                <div class="scene-header">C. MOTOR DE INFERENCIA DEDUCTIVA</div>
+                <div class="scene-content code-view">
+                    <div class="col">
+                        <span class="comment"># -- REGLA DE ENRUTAMIENTO SEGURO --</span><br>
+                        ruta_energia(X, Y) <= (conexion(X, Y) & ~(nodo_danado(Y)))<br><br>
+                        <span class="comment"># -- REGLA RECURSIVA --</span><br>
+                        ruta_energia(X, Y) <= (conexion(X, Z) & ~(nodo_danado(Z)) & ruta_energia(Z, Y))
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scene 4: Result -->
+            <section class="scene" id="scene-d">
+                <div class="scene-header">D. VERDICTO DE MISIÓN: REINICIO</div>
+                <div class="scene-content verdict-split">
+                    <div class="db-visual-container">
+                        <div class="db-image">
+                            <canvas id="finalMapCanvas"></canvas>
+                        </div>
+                        <div class="data-stream"></div>
+                        <div class="loading-overlay">
+                            <div class="spinner"></div>
+                            <div class="percent-text">RECOVERING: <span id="load-pct">0</span>%</div>
+                        </div>
+                    </div>
+                    <div class="console-view">
+                        <div class="terminal">
+                            <div class="line">> ?- ruta_energia(paneles, sop_vital, R).</div>
+                            <div id="searching" class="line gold blink">ACCEDIENDO A DATOS...</div>
+                            <div id="query-result" class="hidden">
+                                <div class="line success">RUTA ENCONTRADA.</div>
+                                <div class="line gold">[paneles, rele_a, rele_c, sop_vital]</div>
+                            </div>
+                        </div>
+                        <div class="scene-footer">
+                            <button class="diag-btn" id="diagBtn">INICIAR RECUPERACIÓN</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Navegación automática activa: Los botones manuales han sido desactivados para el reporte -->
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
